@@ -170,9 +170,9 @@ foreach my $node (@$data) {
     my $ts                = str2time($catalog_timestamp);
 
     foreach my $ignore (@ignore_list) {
-      print "Ignore: $ignore\n";
+      #print "Ignore: $ignore\n";
       if ($certname eq $ignore) {
-        print "Ignoring $ignore certname $certname\n";
+        #print "Ignoring $ignore certname $certname\n";
         $ignoreset = 1;
         next;
       }
