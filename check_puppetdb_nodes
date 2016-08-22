@@ -113,7 +113,7 @@ $np->add_arg(
 
 $np->add_arg(
     spec    => 'ignore|i=s',
-    help    => 'Ignore a list of hosts to perform the check (default: %s)',
+    help    => 'Ignore a list of hosts to perform the check. Must be inside double quotes separated by space (default: %s)',
     default => 'empty',
 );
 
@@ -126,6 +126,8 @@ my %apiurls = (
 if ( !exists $apiurls{$np->opts->apiversion} ) {
     $np->nagios_exit( 'UNKNOWN', 'Unsupported PuppetDB API version ' . $np->opts->apiversion );
 }
+
+my @ignore_list = split(' ', $np->opts->ignore);
 
 my $url = sprintf( 'http%s://%s:%d/',
     defined( $np->opts->ssl ) ? 's' : '',
@@ -159,11 +161,25 @@ if ( defined( $np->opts->node ) and !@$data ) {
         $np->opts->node . " not found in puppetdb\n" );
 }
 
+my $ignoreset = 0;
+
 foreach my $node (@$data) {
     my $certname          = defined($node->{'certname'}) ? $node->{'certname'} : $node->{'name'} ;
     my $deactivated       = $node->{'deactivated'};
     my $catalog_timestamp = $node->{'catalog_timestamp'};
     my $ts                = str2time($catalog_timestamp);
+
+    foreach my $ignore (@ignore_list) {
+      print "Ignore: $ignore\n";
+      if ($certname eq $ignore) {
+        print "Ignoring $ignore certname $certname\n";
+        $ignoreset = 1;
+        next;
+      }
+    }
+
+    if ($ignoreset) { next; }
+
     if ( !defined $deactivated and !length $catalog_timestamp) {
     	    $np->add_message( CRITICAL, 
     		    "$certname last run UNAVAILABLE\n" );
