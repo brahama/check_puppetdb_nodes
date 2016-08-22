@@ -40,7 +40,8 @@ my $np = Nagios::Plugin->new(
       . "[ -p|--port=<port> ] [-s] [ -w|--warning=<minutes> ] "
       . "[ -c|--critical=<minutes> ] [ -W|--warnfails=<num> ] "
       . "[ -C|--critfails=<num> ] [ -n|--node=<node> ]"
-      . "[ -a|--apiversion=<num> ]",
+      . "[ -a|--apiversion=<num> ]"
+      . "[ -i|--ignore=<list> ]",
     shortname => 'Check last node runs from PuppetDB',
     url       => 'https://github.com/evgeni/check_puppetdb_nodes',
     version   => '1.0',
@@ -108,6 +109,12 @@ $np->add_arg(
     spec    => 'apiversion|a=n',
     help    => 'Specify PupppetDB API version (default: %s)',
     default => 3,
+);
+
+$np->add_arg(
+    spec    => 'ignore|i=s',
+    help    => 'Ignore a list of hosts to perform the check (default: %s)',
+    default => 'empty',
 );
 
 $np->getopts;
